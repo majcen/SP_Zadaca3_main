@@ -1,0 +1,278 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include "MM_red_pokazivac.h"
+//#include "MM_red_polje.h"
+using namespace std;
+
+void stanje_u_redu(red a,int n) {
+     for(int i=0;i<n;i++) {
+             element x = FrontQ(a);
+             cout<<"Prioritet: ";
+             switch(x.osoba) {
+                         case 1: cout<<"(1) Umirovljenik "<<endl;
+                                 break;
+                         case 2: cout<<"(2) Invalid "<<endl;
+                                 break;
+                         case 3: cout<<"(3) Trudnica "<<endl;
+                                 break;
+                         case 4: cout<<"(4) VIP klijent "<<endl;
+                                 break;
+                         case 5: cout<<"(5) Ostali klijenti banke "<<endl;
+                                 break;
+                         case 6: cout<<"(6) Nisu klijenti banke"<<endl;
+                                 break;
+                         }
+             cout<<"Ime i prezime: "<<x.prezime_ime<<endl;
+             cout<<"Datum rodjenja: "<<x.datum.d<<"."<<x.datum.m<<"."<<x.datum.y<<endl;
+             cout<<"Stanje tekuceg racuna: "<<x.tekuci<<" kuna"<<endl;
+             cout<<"Stanje deviznog racuna: "<<x.devizni<<" eura"<<endl<<endl;
+             DeQueueQ(a);
+             EnQueueQ(x,a);
+             }
+     }
+void generiranje() {
+    do { 
+         cout<<"Koliko klijenata zelite generirati? (minimalno 20) ";
+         cin>>n; 
+         } while(n<20);
+     for(int i=0;i<n;i++) {
+             element x;
+             x.vrijemeNU=rand()%401 + 100;
+             x.vrijemeT=rand()%401 + 100;
+             if(i==0||i==4||i==8||i==12||i==16) x.vrstatra=1;
+             else if(i==1||i==5||i==9||i==13||i==17) x.vrstatra=2;
+             else if(i==3||i==7||i==11||i==15||i==19) x.vrstatra=3;
+             else if(i==2||i==6||i==10||i==14||i==18) x.vrstatra=4;
+             else x.vrstatra=rand()%4 + 1;
+             if(x.vrstatra==1||x.vrstatra==2) x.osoba=rand()%5 + 1;
+             else if(x.vrstatra==4) x.osoba=rand()%5 + 2;
+             else x.osoba=rand()%6 + 1;
+             if(x.vrstatra==3) placanje_racuna++;                   
+             EnQueueQ(x,q);
+             }
+             
+     } 
+void sortiranje(element p[],int n) {
+     for(int i=n-1;i>0;i--)
+             for(int j=0;j<i;j++) 
+                     if(p[j].osoba>p[i].osoba) {
+                                       element pom=p[j];
+                                       p[j]=p[i];
+                                       p[i]=pom;
+                                       }
+     }
+void dodaj_klijenta() {
+     element x;
+     int vrijeme_ulazka=0;
+     int p[7];
+     for(int i=0;i<7;i++) p[i]=0;
+     for(int i=0;i<n;i++) {
+             x=FrontQ(q);
+             vrijeme_ulazka+=x.vrijemeNU;
+             p[x.osoba]++;
+             cout<<endl;
+             switch(x.osoba) {
+                         case 1: cout<<"Umirovljenik je dosao u banku ";
+                                 cout<<vrijeme_ulazka<<" sekundi nakon otvaranja."<<endl;
+                                 cout<<"Prioritet umirovljenika iznosi 1."<<endl;
+                                 break;
+                         case 2: cout<<"Invalid je dosao u banku ";
+                                 cout<<vrijeme_ulazka<<" sekundi nakon otvaranja."<<endl;
+                                 cout<<"Prioritet invalida iznosi 2."<<endl;
+                                 break;
+                         case 3: cout<<"Trudnica je dosla u banku ";
+                                 cout<<vrijeme_ulazka<<" sekundi nakon otvaranja."<<endl;
+                                 cout<<"Prioritet trudnice iznosi 3."<<endl;
+                                 break;
+                         case 4: cout<<"VIP klijent je dosao u banku ";
+                                 cout<<vrijeme_ulazka<<" sekundi nakon otvaranja."<<endl;
+                                 cout<<"Prioritet VIP klijenta iznosi 4"<<endl;
+                                 break;
+                         case 5: cout<<"Netko od ostalih klijenta je dosao u banku ";
+                                 cout<<vrijeme_ulazka<<" sekundi nakon otvaranja."<<endl;
+                                 cout<<"Prioritet ostalih klijenata iznosi 5"<<endl;
+                                 break;
+                         case 6: cout<<"Osoba koja nije klijent je dosla u banku ";
+                                 cout<<vrijeme_ulazka<<" sekundi nakon otvaranja."<<endl;
+                                 cout<<"Prioritet osobe koja nije klijent je 6"<<endl;
+                                 break;
+                         }
+             cout<<"Ime i prezime klijenta: ";
+             cin.ignore();
+             cin.getline(x.prezime_ime,30);
+             if(x.osoba==1) x.datum.y=1900+rand()%70; 
+             else if (x.osoba==3) x.datum.y=1962+rand()%36;
+             else if (x.osoba==4) x.datum.y=1982+rand()%30;
+             else x.datum.y=1950+rand()%61;                                           
+             x.datum.m=rand()%12+1;
+             x.datum.d=rand()%31 + 1;
+             cout<<"Datum rodjenja: "<<x.datum.d<<".";
+             cout<<x.datum.m<<".";
+             cout<<x.datum.y<<endl;
+             cout<<"Stanje na tekucem racunu iznosi: ",cin>>x.tekuci;
+             cout<<"Stanje na deviznom racunu u eurima iznosi: ",cin>>x.devizni;
+             DeQueueQ(q);
+             EnQueueQ(x,q);
+             EnQueueQ(x,shalter);
+             }
+     cout<<endl;
+     int k=n,br=0;    
+     for(int i=1;i<7;i++) {
+             for(int j=0;j<k;j++) {
+                     x=FrontQ(shalter);
+                     DeQueueQ(shalter);
+                     if(x.osoba==i) {
+                                cout<<"Na shalteru se nalazi: ";
+                                switch(x.osoba) {
+                                case 1: cout<<"Umirovljenik "<<x.prezime_ime<<endl;
+                                        break;
+                                case 2: cout<<"Invalid "<<x.prezime_ime<<endl;
+                                        break;
+                                case 3: cout<<"Trudnica "<<x.prezime_ime<<endl;
+                                        break;
+                                case 4: cout<<"VIP klijent "<<x.prezime_ime<<endl;
+                                        break;
+                                case 5: cout<<"Netko od ostalih klijenata "<<x.prezime_ime<<endl;
+                                        break;
+                                case 6: cout<<"Osoba koja nije klijent "<<x.prezime_ime<<endl;
+                                        break;
+                                }       
+                                cout<<"Vrsta transakcije koja se obavlja: ";
+                                switch(x.vrstatra) {
+                                case 1: cout<<"Uplata"<<endl;
+                                        break;
+                                case 2: cout<<"Isplata"<<endl;
+                                        break;
+                                case 3: cout<<"Placanje racuna"<<endl;
+                                        break;
+                                case 4: cout<<"Krediti"<<endl;
+                                        break;
+                                } 
+                                cout<<"Trajanje procesa: "<<x.vrijemeT<<"sekundi"<<endl;          
+                                if(x.devizni*7.514858>10000.00){
+                                                                cout<<endl<<"Stanje deviznog racuna: ";
+                                                                cout<<x.devizni<<"Euri iznose = "<<x.devizni*7.514858<<" kuna"<<endl;
+                                                                }
+                                cout<<endl;
+                                br++;
+                                }
+                     else EnQueueQ(x,shalter);
+                     }
+             k-=br;
+             br=0;
+             }
+     }   
+       
+void brzo_placanje() {
+     element pom[placanje_racuna];
+     int k=0,j=n;
+     for(int i=0;i<j;i++) {
+                           element x = FrontQ(q);
+                           DeQueueQ(q);
+                           if(x.vrstatra==3) {
+                                       pom[k++]=x;
+                                       n--;
+                                       }
+                           else EnQueueQ(x,q);     
+                         }
+     sortiranje(pom,k);
+     for(int i=0;i<k;i++) EnQueueQ(pom[i],brzi_red);
+     cout<<endl<<"Stanje brzog reda: "<<endl;
+     if(IsEmptyQ(brzi_red)) cout<<"Red je prazan."<<endl;
+     else stanje_u_redu(brzi_red,placanje_racuna);     
+     InitQ(brzi_red);
+     cout<<"\nStanje glavnog reda: "<<endl;
+     if(IsEmptyQ(q)) cout<<"Red je prazan."<<endl;
+     else stanje_u_redu(q,n);
+     }   
+       
+void rekurzija(red a) {
+     element x = FrontQ(a);
+     DeQueueQ(a);
+     if(!IsEmptyQ(a)) rekurzija(a);
+     EnQueueQ(x,a);
+     }  
+     
+void obrisi() {
+     int k=n;
+     cout<<"Obrisani klijent: "<<endl;
+     for(int i=0;i<k;i++) {
+             element x = FrontQ(q);
+             if((x.osoba==4&&x.datum.y>1982&&x.vrstatra==1&&x.tekuci<100)||(x.osoba==1&&x.vrstatra==2&&x.tekuci>5000)) 
+             {                                    
+             switch(x.osoba) {
+             case 1: cout<<"Umirovljenik ";
+                     cout<<x.prezime_ime<<endl;
+                     cout<<"Vrsta transakcije: isplata"<<endl;
+                     break;
+             case 4: cout<<"VIP klijent ";
+                     cout<<x.prezime_ime<<endl;
+                     cout<<"Vrsta transakcije: uplata"<<endl;
+                     break;
+                     }
+             cout<<"Iznos tekuceg racuna u kunama: "<<x.tekuci<<endl;
+             DeQueueQ(q);
+             n--;
+             }
+             else {
+                  DeQueueQ(q);
+                  EnQueueQ(x,q);
+                  }                                                                 
+             }
+     cout<<endl<<"Stanje reda: "<<endl;
+     if(IsEmptyQ(q)) cout<<"Red je prazan."<<endl;
+     else stanje_u_redu(q,n);
+     }
+  
+void obrisi(int k,int post) {
+     element x = FrontQ(q);
+     DeQueueQ(q);
+     k--; 
+     if(!IsEmptyQ(q)) obrisi(k,post);
+     if(k<=post) EnQueueQ(x,novi);
+     else EnQueueQ(x,q);
+     }
+void novi_shalter() {
+     InitQ(novi);
+     float p = n*0.3;
+     int post = int(p);
+     obrisi(n+1,post);
+     rekurzija(q);
+     n = n-post;
+     cout<<"Stanje reda nakon otvaranja novog shaltera: "<<endl;
+     if(IsEmptyQ(novi)) cout<<"Red je prazan"<<endl;
+     stanje_u_redu(novi,post);
+     cout<<endl<<"Stanje glavnog reda: "<<endl;
+     stanje_u_redu(q,n);
+     }
+     
+int main() {
+    int odabir_opcije;
+    srand(time(0));
+    rand();
+    InitQ(q);
+    InitQ(shalter);
+    InitQ(brzi_red);
+    InitQ(novi);
+    generiranje();
+    dodaj_klijenta();
+    do {
+        cout<<endl<<"===ODABERITE==="<<endl;
+        cout<<"1. Otvaranje brzog reda za placanje racuna. "<<endl;    
+        cout<<"2. Brisanje svih VIP klijenata mladjih od 30 koji zele transakciju uplate a na tekucem racuni imaju manje od sto kuna. ";
+        cout<<"Brisanje svih VIP klijenata umirovljenika koji zele transakciju isplate a na racuni imaju vise od pet tisuca kuna."<<endl;
+        cout<<"3. Otvaranje novog shaltera. "<<endl; 
+        cout<<"9. Izlaz iz programa"<<endl;    
+        cin>>odabir_opcije;
+        switch(odabir_opcije) {
+                      case 1: brzo_placanje();break;
+                      case 2: obrisi();break;
+                      case 3: novi_shalter();break;
+                      default:
+                              cout<<"Pogresan unos! "<<endl;break;
+                      }
+        }while(odabir_opcije!=9);
+    system("pause");
+    return 0;
+    }
